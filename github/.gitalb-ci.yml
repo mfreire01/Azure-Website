@@ -1,0 +1,61 @@
+name: Terraform + Deploy to Azure App Service
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # --------------------
+    # LOGIN AZURE
+    # --------------------
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # --------------------
+    # TERRAFORM SETUP
+    # --------------------
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.6
+
+    - name: Terraform Init
+      working-directory: terraform
+      run: |
+        terraform init \
+        -backend-config="resource_group_name=${{ secrets.TFSTATE_RG }}" \
+        -backend-config="storage_account_name=${{ secrets.TFSTATE_STORAGE }}" \
+        -backend-config="container_name=tfstate" \
+        -backend-config="key=infra.tfstate"
+
+    - name: Terraform Apply
+      working-directory: terraform
+      run: |
+        terraform apply -auto-approve \
+          -var "greeting_name=${{ secrets.GREETING_NAME }}" \
+          -var "suffix=${{ github.run_id }}"
+
+    # --------------------
+    # DEPLOY CODE
+    # --------------------
+    - name: ZIP the app
+      run: |
+        cd app
+        zip -r ../app.zip .
+
+    - name: Deploy to Azure App Service
+      run: |
+        az webapp deploy \
+          --resource-group hello-world-rg \
+          --name hello-web-${{ github.run_id }} \
+          --src-path app.zip \
+          --type zip
