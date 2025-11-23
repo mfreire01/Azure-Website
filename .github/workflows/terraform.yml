@@ -89,5 +89,5 @@ jobs:
     - name: Deploy PHP
       uses: azure/webapps-deploy@v2
       with:
-        app-name: hello-web-prod   # REEMPLAZA con el nombre que genera Terraform
-        package: ./app             # carpeta donde está index.php
+        app-name: hello-web-prod
+        package: ./app/.
