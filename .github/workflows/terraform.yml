@@ -67,12 +67,12 @@ jobs:
 
     - name: Terraform Plan
       working-directory: terraform
-      run: terraform -chdir=terraform plan \
+      run: terraform -chdir=../../terraform plan \
         -var "suffix=prod" \
         -var "greeting_name=Azure"
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform -chdir=terraform apply -auto-approve \
+      run: terraform -chdir=../../terraform apply -auto-approve \
         -var "suffix=prod" \
         -var "greeting_name=Azure"
