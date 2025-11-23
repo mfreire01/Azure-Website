@@ -30,6 +30,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+    # Remove Terraform lock
     - name: Remove Terraform lock
       run: |
         az storage blob delete --container-name tfstate \
