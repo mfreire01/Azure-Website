@@ -86,7 +86,7 @@ jobs:
       run: terraform apply -auto-approve -var="suffix=prod" -var="greeting_name=Mario"
 
     # Deploy PHP App
-    - name: Deploy to Azure Web App
+    - name: Deploy PHP
       uses: azure/webapps-deploy@v2
       with:
         app-name: hello-web-prod   # REEMPLAZA con el nombre que genera Terraform
