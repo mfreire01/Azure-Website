@@ -29,7 +29,7 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
-    # Terraform Backend Setup if not existig already
+    # Terraform Backend Setup
     - name: Create Terraform Backend Resources
       run: |
         echo "Creating RG if not exists..."
@@ -37,7 +37,7 @@ jobs:
 
         echo "Creating Storage Account if not exists..."
         az storage account create \
-          --name mfreiretfstatestorage\
+          --name mfreiretfstatestorage \
           --resource-group tfstate-rg \
           --location westeurope \
           --sku Standard_LRS || true
@@ -67,12 +67,13 @@ jobs:
 
     - name: Terraform Plan
       working-directory: terraform
-      run: terraform -chdir=../../terraform plan \
+      run: terraform plan \
         -var "suffix=prod" \
         -var "greeting_name=Azure"
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform -chdir=../../terraform apply -auto-approve \
+      working-directory: terraform
+      run: terraform apply -auto-approve \
         -var "suffix=prod" \
         -var "greeting_name=Azure"
