@@ -67,13 +67,9 @@ jobs:
 
     - name: Terraform Plan
       working-directory: terraform
-      run: terraform plan \
-        -var="suffix=prod" \
-        -var="greeting_name=Azure"
+      run: terraform plan -auto-approve -var "suffix=prod" -var "greeting_name=Mario"
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       working-directory: terraform
-      run: terraform apply -auto-approve \
-        -var="suffix=prod" \
-        -var="greeting_name=Azure"
+      run: terraform apply -auto-approve -var="suffix=prod" -var="greeting_name=Mario"
