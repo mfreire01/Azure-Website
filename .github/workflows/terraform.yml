@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: terraform
+  cancel-in-progress: false
+
 jobs:
   terraform:
     name: 'Terraform'
@@ -25,6 +29,12 @@ jobs:
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Remove Terraform lock
+      run: |
+        az storage blob delete --container-name tfstate \
+          --name infra.tfstate.lock \
+          --account-name ${{ env.AZURE_STORAGE_ACCOUNT }} || true
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
