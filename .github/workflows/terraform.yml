@@ -37,7 +37,7 @@ jobs:
 
         echo "Creating Storage Account if not exists..."
         az storage account create \
-          --name tfstatestorage\
+          --name mfreiretfstatestorage\
           --resource-group tfstate-rg \
           --location westeurope \
           --sku Standard_LRS || true
@@ -45,13 +45,13 @@ jobs:
         echo "Retrieving Storage Account Key..."
         ACCOUNT_KEY=$(az storage account keys list \
           --resource-group tfstate-rg \
-          --account-name tfstatestorage \
+          --account-name mfreiretfstatestorage \
           --query "[0].value" -o tsv)
 
         echo "Creating container if not exists..."
         az storage container create \
           --name tfstate \
-          --account-name tfstatestorage \
+          --account-name mfreiretfstatestorage \
           --account-key "$ACCOUNT_KEY" || true
 
         echo "Done creating backend."
@@ -61,7 +61,7 @@ jobs:
       run: |
         terraform init \
           -backend-config="resource_group_name=tfstate-rg" \
-          -backend-config="storage_account_name=tfstatestorage" \
+          -backend-config="storage_account_name=mfreiretfstatestorage" \
           -backend-config="container_name=tfstate" \
           -backend-config="key=infra.tfstate"
 
